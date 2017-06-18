@@ -34,7 +34,7 @@ class MyXgbClassifier2:
                                   verbose_eval=self.verbose_eval)
         num_boost_round = partial_model.best_iteration
 
-        self.model = xgb.train(dict(self.params, silent=0), dtrain,
+        self.model = xgb.train(self.params, dtrain,
                                num_boost_round=num_boost_round)
 
     def predict(self, X_test):
