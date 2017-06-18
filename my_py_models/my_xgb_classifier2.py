@@ -19,7 +19,7 @@ class MyXgbClassifier2:
         self.test_size = test_size
         self.random_state = random_state
 
-    def fit(self, X_train, y_train, X_val, y_val):
+    def fit(self, X_train, y_train, X_val=None, y_val=None):
 
         X_train, X_val, y_train, y_val = train_test_split(
             X_train, y_train, test_size=self.test_size,
