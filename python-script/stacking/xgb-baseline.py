@@ -9,9 +9,10 @@ from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
 from my_py_models.utils import factorize_obj
 from os.path import join
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 # Sample
+title = 'XgbBaseline'
 train = pd.read_csv(join(INPUT_PATH, 'train.csv'))
 test = pd.read_csv(join(INPUT_PATH, 'test.csv'))
 train_ID = train.ID
@@ -49,16 +50,15 @@ stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888
-sstotal = y_train.values.std()
 for pred_oof_single in pred_oof.T:
-    print (sstotal - mean_squared_error(pred_oof_single, y_train)) / sstotal
+    print r2_score(y_train, pred_oof_single)
 
 # Save test
 submission = pd.DataFrame({'ID': test_ID, 'y': pred_test[:, 0]})
 submission.to_csv(join(
-    OUTPUT_PATH, 'stacking/Submission-XgbBaseline-Test.csv'), index=False)
+    OUTPUT_PATH, 'stacking/Submission-{}-Test.csv'.format(title)), index=False)
 
 # Save oof
 oof_pred = pd.DataFrame({'ID': train_ID, 'y': pred_oof[:, 0]})
 oof_pred.to_csv(join(
-    OUTPUT_PATH, 'stacking/Submission-XgbBaseline-OutOfFold.csv'), index=False)
+    OUTPUT_PATH, 'stacking/Submission-{}-OutOfFold.csv'.format(title)), index=False)
