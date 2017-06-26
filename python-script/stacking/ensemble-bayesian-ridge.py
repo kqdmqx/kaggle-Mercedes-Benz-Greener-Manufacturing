@@ -91,7 +91,7 @@ test_ID = test_df.index.values
 
 # 5cv
 clf = BayesianRidge()
-stacking = Stacking(5, [clf], random_state=67373)
+stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888
