@@ -29,3 +29,9 @@ def get_script_title(string):
                        (os.path.split(string)[1]
                                .split('.')[0]
                                .split('-'))))
+
+
+def drop_duplicate_columns(dataframe):
+    columns = dataframe.columns
+    keep = pd.DataFrame(dataframe.T.values).drop_duplicates().index.values
+    return dataframe[columns.values[keep]]

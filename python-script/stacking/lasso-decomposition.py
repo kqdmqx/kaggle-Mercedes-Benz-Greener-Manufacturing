@@ -30,6 +30,12 @@ y_train = train.y
 train_test = pd.concat([train, test])
 train_test.drop(["ID", "y"], axis=1, inplace=True)
 train_test_p = factorize_obj(train_test)
+print len(train_test_p.columns)
+train_test_p2 = pd.DataFrame(train_test_p.T.values)
+keep = train_test_p2.drop_duplicates().index.values
+unique_columns = train_test_p.columns.values[keep]
+train_test_p = train_test_p[list(unique_columns)]
+print len(train_test_p.columns)
 
 ############################################################
 # Add decomposition feature

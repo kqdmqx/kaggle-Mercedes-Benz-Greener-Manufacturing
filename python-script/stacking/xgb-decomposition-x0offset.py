@@ -13,6 +13,8 @@ from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
 from sklearn.metrics import r2_score
+# import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Sample
 title = get_script_title(__file__)
@@ -24,6 +26,9 @@ test_ID = test.ID
 
 # Y
 y_train = train.y
+X0_mean_dict = train.groupby('X0').y.agg('mean').to_dict()
+X0_std_dict = train.groupby('X0').y.agg('std').to_dict()
+y_train = y_train - train['X0'].map(X0_mean_dict)
 
 # Features
 train_test = pd.concat([train, test])
@@ -83,7 +88,7 @@ X_test = X_all[num_train:]
 xgb_params = {
     'n_trees': 500,
     'eta': 0.005,
-    'max_depth': 4,
+    'max_depth': 6,
     'subsample': 0.95,
     'objective': 'reg:linear',
     'eval_metric': 'rmse',
@@ -107,3 +112,7 @@ submission.to_csv(join(
 oof_pred = pd.DataFrame({'ID': train_ID, 'y': pred_oof[:, 0]})
 oof_pred.to_csv(join(
     OUTPUT_PATH, 'stacking/Submission-{}-OutOfFold.csv'.format(title)), index=False)
+
+# Plot result
+plt.scatter(y_train, pred_oof, alpha=.1)
+plt.show()

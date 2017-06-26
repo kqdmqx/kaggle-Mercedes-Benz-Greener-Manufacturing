@@ -8,7 +8,7 @@ import sys
 sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
-from my_py_models.utils import factorize_obj, get_script_title
+from my_py_models.utils import factorize_obj, get_script_title, drop_duplicate_columns
 from os.path import join
 from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
 from sklearn.linear_model import LassoLarsCV
@@ -32,6 +32,7 @@ y_train = train.y
 train_test = pd.concat([train, test])
 train_test.drop(["ID", "y"], axis=1, inplace=True)
 train_test_p = factorize_obj(train_test)
+train_test_p = drop_duplicate_columns(train_test_p)
 
 # X_train & X_test
 X_all = train_test_p.values

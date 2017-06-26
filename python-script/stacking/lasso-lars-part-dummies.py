@@ -6,7 +6,7 @@ import sys
 sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
-from my_py_models.utils import get_script_title
+from my_py_models.utils import get_script_title, drop_duplicate_columns
 from os.path import join
 from sklearn.linear_model import LassoLars
 from sklearn.metrics import r2_score
@@ -29,6 +29,7 @@ train_test_numeric = train_test.select_dtypes(exclude=['object'])
 train_test_obj = train_test.select_dtypes(include=['object']).copy()
 train_test_dummies = pd.get_dummies(train_test_obj)
 train_test_p = pd.concat([train_test_numeric, train_test_dummies], axis=1)
+train_test_p = drop_duplicate_columns(train_test_p)
 
 # X_train & X_test
 X_all = train_test_p.values

@@ -10,6 +10,8 @@ from my_py_models.utils import get_script_title, drop_duplicate_columns
 from os.path import join
 from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Sample
 title = get_script_title(__file__)
@@ -21,6 +23,18 @@ test_ID = test.ID
 
 # Y
 y_train = train.y
+X0_mean_dict = train.groupby('X0').y.agg('mean').to_dict()
+# X0_std_dict = train.groupby('X0').y.agg('std').to_dict()
+X0_mean = train['X0'].map(X0_mean_dict)
+y_train = y_train - X0_mean
+sns.kdeplot(y_train)
+plt.show()
+
+plt.scatter(train.y, y_train)
+plt.show()
+
+plt.scatter(X0_mean, y_train)
+plt.show()
 
 # Features
 train_test = pd.concat([train, test])
@@ -39,7 +53,7 @@ X_train = X_all[:num_train]
 X_test = X_all[num_train:]
 
 # 5cv
-clf = Lasso(normalize=True, alpha=0.005)
+clf = Lasso(normalize=True, alpha=0.0025)
 stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
