@@ -12,7 +12,7 @@ from os.path import join
 # from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 # from sklearn.random_projection import GaussianRandomProjection
 # from sklearn.random_projection import SparseRandomProjection
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import BayesianRidge
 from sklearn.metrics import r2_score
 
 # stacking_dir = '../../output/stacking/'
@@ -21,15 +21,13 @@ print title
 stacking_dir = join(OUTPUT_PATH, 'stacking')
 oof_format = 'Submission-{}-OutOfFold.csv'
 test_format = 'Submission-{}-Test.csv'
-model_list = ['Lasso', 'LassoLars', 'Decomposition',
-              'RandomForestRegressor', 'XgbBaseline']
-
 model_list = map(get_script_title, os.listdir('../../python-script/stacking/'))
 model_list.remove('XgbBaseline120')
 model_list.remove('LassoFullDummies')
-model_list.remove('EnsembleXgb')
-model_list.remove('EnsembleLasso')
-model_list.remove('EnsembleLassoDecomposition')
+# model_list.remove('EnsembleXgb')
+# model_list.remove('EnsembleLasso')
+# model_list.remove('EnsembleLassoDecomposition')
+model_list.remove('EnsembleBayesianRidge')
 # model_list.remove('LassoLarsDecomposition')
 # model_list.remove('LassoLarsPartDummies')
 index_col = 'ID'
@@ -92,8 +90,8 @@ train_ID = oof_df.index.values
 test_ID = test_df.index.values
 
 # 5cv
-clf = Lasso(normalize=False, alpha=0.25)
-stacking = Stacking(5, [clf])
+clf = BayesianRidge()
+stacking = Stacking(5, [clf], random_state=67373)
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888

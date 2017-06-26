@@ -118,8 +118,3 @@ submission.to_csv(join(
 oof_pred = pd.DataFrame({'ID': train_ID, 'y': pred_oof[:, 0]})
 oof_pred.to_csv(join(
     OUTPUT_PATH, 'stacking/Submission-{}-OutOfFold.csv'.format(title)), index=False)
-
-# 0.567756047705
-# 0.567769885167
-# 0.567792382123
-# 0.567813803919 0.25
