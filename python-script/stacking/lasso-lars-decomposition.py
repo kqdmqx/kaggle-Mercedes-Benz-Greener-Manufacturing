@@ -7,16 +7,17 @@ sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
 # from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
-from my_py_models.utils import factorize_obj
+from my_py_models.utils import factorize_obj, get_script_title
 from os.path import join
 from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.random_projection import SparseRandomProjection
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LassoLars
 from sklearn.metrics import r2_score
 
 # Sample
-title = 'RandomForestRegressor'
+title = get_script_title(__file__)
+print title
 train = pd.read_csv(join(INPUT_PATH, 'train.csv'))
 test = pd.read_csv(join(INPUT_PATH, 'test.csv'))
 train_ID = train.ID
@@ -79,16 +80,11 @@ X_train = X_all[:num_train]
 X_test = X_all[num_train:]
 
 # 5cv
-clf = RandomForestRegressor(
-    n_estimators=500,
-    max_depth=4,
-    random_state=2016
-)
+clf = LassoLars(normalize=True, alpha=0.001)
 stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888
-# 0.561781389275
 for pred_oof_single in pred_oof.T:
     print r2_score(y_train, pred_oof_single)
 

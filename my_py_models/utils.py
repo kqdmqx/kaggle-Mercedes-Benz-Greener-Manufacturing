@@ -2,6 +2,7 @@
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error
+import os
 
 
 def factorize_obj(train_test):
@@ -18,3 +19,13 @@ def r_square(pred, true):
     sstotal = true.std() ** 2
     ssresid = mean_squared_error(pred, true)
     return (sstotal - ssresid) / sstotal
+
+
+def get_script_title(string):
+    def head_upper(string):
+        return string[0].upper() + string[1:] if len(string) > 0 else string
+
+    return ''.join(map(head_upper,
+                       (os.path.split(string)[1]
+                               .split('.')[0]
+                               .split('-'))))

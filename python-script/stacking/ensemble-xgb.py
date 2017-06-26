@@ -5,14 +5,14 @@ import os
 import sys
 sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
-# from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
+from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
 from my_py_models.utils import get_script_title
 from os.path import join
 # from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 # from sklearn.random_projection import GaussianRandomProjection
 # from sklearn.random_projection import SparseRandomProjection
-from sklearn.linear_model import Lasso
+# from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score
 
 # stacking_dir = '../../output/stacking/'
@@ -27,8 +27,6 @@ model_list = ['Lasso', 'LassoLars', 'Decomposition',
 model_list = map(get_script_title, os.listdir('../../python-script/stacking/'))
 model_list.remove('XgbBaseline120')
 model_list.remove('LassoFullDummies')
-model_list.remove('EnsembleXgb')
-model_list.remove('EnsembleLasso')
 # model_list.remove('LassoLarsDecomposition')
 # model_list.remove('LassoLarsPartDummies')
 index_col = 'ID'
@@ -91,7 +89,19 @@ train_ID = oof_df.index.values
 test_ID = test_df.index.values
 
 # 5cv
-clf = Lasso(normalize=False, alpha=0.25)
+# clf = Lasso(normalize=False, alpha=0.25)
+xgb_params = {
+    'n_trees': 500,
+    'eta': 0.0025,
+    'max_depth': 2,
+    'subsample': 0.95,
+    'objective': 'reg:linear',
+    'base_score': y_train.mean(),
+    'eval_metric': 'rmse',
+    'silent': 1
+}
+
+clf = MyXgbClassifier2(xgb_params, num_boost_round=10000)
 stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 

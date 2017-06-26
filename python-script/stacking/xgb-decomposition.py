@@ -7,7 +7,7 @@ sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
 from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
-from my_py_models.utils import factorize_obj
+from my_py_models.utils import factorize_obj, get_script_title
 from os.path import join
 from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection
@@ -15,7 +15,8 @@ from sklearn.random_projection import SparseRandomProjection
 from sklearn.metrics import r2_score
 
 # Sample
-title = 'Decomposition'
+title = get_script_title(__file__)
+print title
 train = pd.read_csv(join(INPUT_PATH, 'train.csv'))
 test = pd.read_csv(join(INPUT_PATH, 'test.csv'))
 train_ID = train.ID
