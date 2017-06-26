@@ -2,10 +2,11 @@
 
 import numpy as np
 from sklearn.model_selection import KFold
+from copy import copy
 
 
 class Stacking:
-    def __init__(self, n_folds, base_models, random_state=2016):
+    def __init__(self, n_folds, base_models, metric=None, random_state=2016):
         '''
         Ensemble Stacking Level
         Parameters:
@@ -16,6 +17,9 @@ class Stacking:
         self.n_folds = n_folds
         self.base_models = base_models
         self.random_state = random_state
+        self.metric = metric
+        self.metric_result = []
+        self.estimators = []
 
     def fit_predict(self, X, y, T):
         '''
@@ -34,26 +38,38 @@ class Stacking:
         y = np.array(y)
         T = np.array(T)
 
-        kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=self.random_state)
+        kf = KFold(n_splits=self.n_folds, shuffle=True,
+                   random_state=self.random_state)
         folds = list(kf.split(X, y))
 
         S_train = np.zeros((X.shape[0], len(self.base_models)))
         S_test = np.zeros((T.shape[0], len(self.base_models)))
 
-        for i, clf in enumerate(self.base_models):
+        for i, estimator_prototype in enumerate(self.base_models):
             S_test_i = np.zeros((T.shape[0], len(folds)))
+
+            estimator = copy(estimator_prototype)
+            self.estimators.append(estimator)
 
             for j, (train_idx, test_idx) in enumerate(folds):
                 X_train = X[train_idx]
                 y_train = y[train_idx]
                 X_holdout = X[test_idx]
-                # y_holdout = y[test_idx]
-                clf.fit(X_train, y_train)
-                y_pred = clf.predict(X_holdout)[:]
+                y_holdout = y[test_idx]
+                estimator.fit(X_train, y_train)
+                y_pred = estimator.predict(X_holdout)[:]
+                if self.metric is not None:
+                    self.metric_result.append(self.metric(y_holdout, y_pred))
                 S_train[test_idx, i] = y_pred
-                S_test_i[:, j] = clf.predict(T)[:]
+                S_test_i[:, j] = estimator.predict(T)[:]
             S_test[:, i] = S_test_i.mean(1)
 
         out_of_fold_pred = S_train
         test_pred = S_test
         return out_of_fold_pred, test_pred
+
+    def fit(self, X, y):
+        pass
+
+    def transform(self, X):
+        pass

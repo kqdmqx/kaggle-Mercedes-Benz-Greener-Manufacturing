@@ -82,12 +82,14 @@ clf = make_pipeline(
                                                           min_samples_leaf=18, min_samples_split=14, subsample=0.7)),
     LassoLarsCV()
 )
-stacking = Stacking(5, [clf])
+stacking = Stacking(5, [clf], metric=r2_score)
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888
 for pred_oof_single in pred_oof.T:
     print r2_score(y_train, pred_oof_single)
+metric_result = stacking.metric_result
+print np.mean(metric_result), np.std(metric_result)
 
 # Save test
 submission = pd.DataFrame({'ID': test_ID, 'y': pred_test[:, 0]})

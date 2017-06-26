@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import pandas as pd
+import numpy as np
 import os
 import sys
 sys.path.append('../..')
@@ -24,10 +25,17 @@ test_format = 'Submission-{}-Test.csv'
 model_list = map(get_script_title, os.listdir('../../python-script/stacking/'))
 model_list.remove('XgbBaseline120')
 model_list.remove('LassoFullDummies')
+model_list.remove('EnsembleLasso')
+model_list.remove('EnsembleXgb')
+model_list.remove('LassoLarsDecomposition')
+model_list.remove('LassoLarsPartDummies')
+model_list.remove('EnsembleBayesianRidge')
+model_list.remove('LassoDecomposition')
+model_list.remove('RandomForestDecomposition')
+model_list.remove('LassoPartDummies')
 # model_list.remove('EnsembleXgb')
 # model_list.remove('EnsembleLasso')
 # model_list.remove('EnsembleLassoDecomposition')
-model_list.remove('EnsembleBayesianRidge')
 # model_list.remove('LassoLarsDecomposition')
 # model_list.remove('LassoLarsPartDummies')
 index_col = 'ID'
@@ -91,12 +99,17 @@ test_ID = test_df.index.values
 
 # 5cv
 clf = BayesianRidge()
-stacking = Stacking(5, [clf])
+stacking = Stacking(5, [clf], metric=r2_score)
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
 
 # r^2 0.56200717888
 for pred_oof_single in pred_oof.T:
     print r2_score(y_train, pred_oof_single)
+metric_result = stacking.metric_result
+print np.mean(metric_result), np.std(metric_result)
+estimator0 = stacking.estimators[0]
+for model_name, coef in zip(model_list, estimator0.coef_):
+    print model_name, coef
 
 # Save test
 submission = pd.DataFrame({'ID': test_ID, 'y': pred_test[:, 0]})

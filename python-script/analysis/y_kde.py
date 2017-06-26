@@ -41,3 +41,8 @@ plt.plot((112 + offset, 112 - offset), (112 - offset, 112 + offset), c='r', alph
 plt.plot((117 + offset, 117 - offset), (117 - offset, 117 + offset), c='r', alpha=.5)
 plt.plot((70, 125), (70, 125), c='r', alpha=.5)
 plt.show()
+
+
+train['y_cluster'] = pd.cut(train.y, [0, 82, 96, 103, 112, 117, 999], right=False)
+train.y_cluster.value_counts().plot(kind='bar')
+plt.show()
