@@ -20,6 +20,7 @@ class Stacking:
         self.metric = metric
         self.metric_result = []
         self.estimators = []
+        self.kf = None
 
     def fit_predict(self, X, y, T):
         '''
@@ -40,6 +41,7 @@ class Stacking:
 
         kf = KFold(n_splits=self.n_folds, shuffle=True,
                    random_state=self.random_state)
+        self.kf = kf
         folds = list(kf.split(X, y))
 
         S_train = np.zeros((X.shape[0], len(self.base_models)))

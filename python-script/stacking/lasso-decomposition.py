@@ -7,7 +7,7 @@ sys.path.append('../..')
 from my_py_models.stacking2 import Stacking
 # from my_py_models.my_xgb_classifier2 import MyXgbClassifier2
 from my_py_models.config import INPUT_PATH, OUTPUT_PATH
-from my_py_models.utils import factorize_obj, get_script_title
+from my_py_models.utils import factorize_obj, get_script_title, drop_duplicate_columns
 from os.path import join
 from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection
@@ -30,12 +30,7 @@ y_train = train.y
 train_test = pd.concat([train, test])
 train_test.drop(["ID", "y"], axis=1, inplace=True)
 train_test_p = factorize_obj(train_test)
-print len(train_test_p.columns)
-train_test_p2 = pd.DataFrame(train_test_p.T.values)
-keep = train_test_p2.drop_duplicates().index.values
-unique_columns = train_test_p.columns.values[keep]
-train_test_p = train_test_p[list(unique_columns)]
-print len(train_test_p.columns)
+train_test_p = drop_duplicate_columns(train_test_p)
 
 ############################################################
 # Add decomposition feature

@@ -35,3 +35,12 @@ def drop_duplicate_columns(dataframe):
     columns = dataframe.columns
     keep = pd.DataFrame(dataframe.T.values).drop_duplicates().index.values
     return dataframe[columns.values[keep]]
+
+
+def kfold_cv_score(y_true, oof_pred, kf, metric):
+    split_result = list(kf.split(y_true))
+    metric_result = []
+    for tridx, tsidx in split_result:
+        metric_result.append(metric(y_true[tsidx], oof_pred[tsidx]))
+    return split_result, metric_result
+
