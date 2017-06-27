@@ -22,15 +22,14 @@ print title
 stacking_dir = join(OUTPUT_PATH, 'stacking')
 oof_format = 'Submission-{}-OutOfFold.csv'
 test_format = 'Submission-{}-Test.csv'
-model_list = ['Lasso', 'LassoLars', 'Decomposition',
-              'RandomForestRegressor', 'XgbBaseline']
 
 model_list = map(get_script_title, os.listdir('../../python-script/stacking/'))
 model_list.remove('XgbBaseline120')
-model_list.remove('LassoFullDummies')
-model_list.remove('EnsembleXgb')
-model_list.remove('EnsembleLasso')
-model_list.remove('EnsembleLassoDecomposition')
+model_list = filter(lambda x: not x.startswith('Submission-Ensemble'), model_list)
+# model_list.remove('LassoFullDummies')
+# model_list.remove('EnsembleXgb')
+# model_list.remove('EnsembleLasso')
+# model_list.remove('EnsembleLassoDecomposition')
 # model_list.remove('LassoLarsDecomposition')
 # model_list.remove('LassoLarsPartDummies')
 index_col = 'ID'
@@ -49,8 +48,8 @@ def load_stacking_data(model_list,
         if os.path.isfile(model_path):
             if not silence:
                 print 'load file', model_path
-        oof_dict[model_str] = pd.read_csv(
-            model_path, index_col=index_col)[tar_col]
+            oof_dict[model_str] = pd.read_csv(
+                model_path, index_col=index_col)[tar_col]
     return pd.DataFrame(oof_dict)
 
 

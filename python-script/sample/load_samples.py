@@ -1,14 +1,20 @@
 # coding=utf-8
 
 import pandas as pd
+import numpy as np
 import os
+import sys
+sys.path.append('../..')
+from my_py_models.utils import get_script_title, kfold_cv_score
+from sklearn.model_selection import KFold
+from sklearn.metrics import r2_score
 
 stacking_dir = '../../output/stacking/'
 oof_format = 'Submission-{}-OutOfFold.csv'
 test_format = 'Submission-{}-Test.csv'
 
-model_list = ['Lasso', 'LassoLars', 'Decomposition',
-              'RandomForestRegressor', 'XgbBaseline']
+
+model_list = map(get_script_title, os.listdir('../../python-script/stacking/'))
 index_col = 'ID'
 tar_col = 'y'
 
@@ -56,6 +62,14 @@ def load_stacking_predictions(model_list,
 
 oof_df, test_df = load_stacking_predictions(model_list, '../../input/train.csv')
 
-print oof_df.head()
-print test_df.head()
+kf = KFold(n_splits=5, shuffle=True, random_state=2016)
 
+for col in oof_df.columns:
+    try:
+        split_result, metric_result = kfold_cv_score(oof_df.y.values, oof_df[col].values, kf, r2_score)
+        print "{},{},{},{}".format(
+            col, np.mean(metric_result), np.std(metric_result),
+            r2_score(oof_df.y, oof_df[col])
+        )
+    except Exception, e:
+        print 'column {} wrong'.format(col)

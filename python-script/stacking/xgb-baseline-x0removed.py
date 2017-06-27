@@ -26,9 +26,9 @@ y_train = train.y
 
 # Features
 train_test = pd.concat([train, test])
-train_test.drop(["X0", "ID", "y"], axis=1, inplace=True)
 train_test_p = factorize_obj(train_test)
 train_test_p = drop_duplicate_columns(train_test_p)
+train_test_p.drop(["X0", "ID", "y"], axis=1, inplace=True)
 
 X_all = train_test_p.values
 print(X_all.shape)

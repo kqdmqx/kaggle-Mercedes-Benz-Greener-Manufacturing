@@ -88,7 +88,7 @@ X_test = X_all[num_train:]
 xgb_params = {
     'n_trees': 500,
     'eta': 0.005,
-    'max_depth': 6,
+    'max_depth': 3,
     'subsample': 0.95,
     'objective': 'reg:linear',
     'eval_metric': 'rmse',
