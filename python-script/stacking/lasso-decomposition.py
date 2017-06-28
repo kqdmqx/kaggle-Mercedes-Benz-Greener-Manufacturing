@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# import numpy as np
+import numpy as np
 import pandas as pd
 import sys
 sys.path.append('../..')
@@ -80,7 +80,25 @@ num_train = train_ID.shape[0]
 X_train = X_all[:num_train]
 X_test = X_all[num_train:]
 
-# 5cv
+# feature selection
+clf = Lasso(normalize=True, alpha=0.005)
+stacking = Stacking(5, [clf])
+pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)
+
+selected_idx = np.zeros(X_train.shape[1])
+for esimator in stacking.estimators:
+    coef = esimator.coef_
+    selected_idx = np.logical_or(selected_idx, coef != 0)
+
+selected_columns = list(np.array(train_test_p.columns)[selected_idx])
+
+X_all = train_test_p[selected_columns].values
+print(X_all.shape)
+num_train = train_ID.shape[0]
+X_train = X_all[:num_train]
+X_test = X_all[num_train:]
+
+# real work
 clf = Lasso(normalize=True, alpha=0.005)
 stacking = Stacking(5, [clf])
 pred_oof, pred_test = stacking.fit_predict(X_train, y_train, X_test)

@@ -50,10 +50,9 @@ class Stacking:
         for i, estimator_prototype in enumerate(self.base_models):
             S_test_i = np.zeros((T.shape[0], len(folds)))
 
-            estimator = copy(estimator_prototype)
-            self.estimators.append(estimator)
-
             for j, (train_idx, test_idx) in enumerate(folds):
+                estimator = copy(estimator_prototype)
+                self.estimators.append(estimator)
                 X_train = X[train_idx]
                 y_train = y[train_idx]
                 X_holdout = X[test_idx]

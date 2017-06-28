@@ -1,3 +1,4 @@
 *.pyc
 output
 input
+/my_py_models/config.py
